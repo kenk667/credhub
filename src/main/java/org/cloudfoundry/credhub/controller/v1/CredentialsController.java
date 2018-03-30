@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.cloudfoundry.credhub.audit.CEFAuditRecord;
 import org.cloudfoundry.credhub.audit.EventAuditLogService;
 import org.cloudfoundry.credhub.audit.entity.GetCredential;
+import org.cloudfoundry.credhub.audit.entity.SetCredential;
 import org.cloudfoundry.credhub.exceptions.InvalidQueryParameterException;
 import org.cloudfoundry.credhub.handler.CredentialsHandler;
 import org.cloudfoundry.credhub.handler.LegacyGenerationHandler;
@@ -177,6 +178,7 @@ public class CredentialsController {
 
 
   private CredentialView auditedHandlePutRequest(@RequestBody BaseCredentialSetRequest requestBody) {
+    auditRecord.setRequestDetails(new SetCredential(requestBody.getName(),requestBody.getType(),requestBody.getMode(),requestBody.getAdditionalPermissions()));
     return eventAuditLogService.auditEvents(
         auditRecordParameters -> setHandler.handle(requestBody, auditRecordParameters));
   }
