@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.cloudfoundry.credhub.audit.CEFAuditRecord;
 import org.cloudfoundry.credhub.audit.EventAuditLogService;
 import org.cloudfoundry.credhub.audit.entity.DeleteCredential;
+import org.cloudfoundry.credhub.audit.entity.FindCredential;
 import org.cloudfoundry.credhub.audit.entity.GetCredential;
 import org.cloudfoundry.credhub.audit.entity.RequestDetails;
 import org.cloudfoundry.credhub.audit.entity.SetCredential;
@@ -159,6 +160,10 @@ public class CredentialsController {
   @RequestMapping(path = "", params = "path", method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public FindCredentialResults findByPath(@RequestParam("path") String path) {
+    FindCredential findCredential = new FindCredential();
+    findCredential.setPath(path);
+    auditRecord.setRequestDetails(findCredential);
+
     return eventAuditLogService
         .auditEvents(eventAuditRecordParametersList -> new FindCredentialResults(
             credentialService.findStartingWithPath(path, eventAuditRecordParametersList)));
@@ -167,6 +172,10 @@ public class CredentialsController {
   @RequestMapping(path = "", params = "paths=true", method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public FindPathResults findPaths() {
+    FindCredential findCredential = new FindCredential();
+    findCredential.setPaths(true);
+    auditRecord.setRequestDetails(findCredential);
+
     return eventAuditLogService.auditEvents(eventAuditRecordParametersList -> {
       List<String> paths = credentialService.findAllPaths(eventAuditRecordParametersList);
       return FindPathResults.fromEntity(paths);
@@ -176,6 +185,10 @@ public class CredentialsController {
   @RequestMapping(path = "", params = "name-like", method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public FindCredentialResults findByNameLike(@RequestParam("name-like") String nameLike) {
+    FindCredential findCredential = new FindCredential();
+    findCredential.setNameLike(nameLike);
+    auditRecord.setRequestDetails(findCredential);
+
     return eventAuditLogService
         .auditEvents(eventAuditRecordParametersList -> new FindCredentialResults(
             credentialService.findContainingName(nameLike, eventAuditRecordParametersList)));
